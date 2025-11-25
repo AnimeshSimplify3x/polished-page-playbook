@@ -18,10 +18,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Search, Plus, Play, Pause, RotateCw, User } from "lucide-react";
 
 const DistributorList = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const distributors = [
     { 
@@ -78,6 +88,10 @@ const DistributorList = () => {
     };
     return <Badge className={colors[status] || ""}>{status}</Badge>;
   };
+
+  const totalPages = Math.ceil(distributors.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedDistributors = distributors.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="space-y-6">
@@ -137,44 +151,44 @@ const DistributorList = () => {
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="font-semibold">Distributor Name</TableHead>
-                <TableHead className="font-semibold">Code</TableHead>
-                <TableHead className="font-semibold">Status</TableHead>
-                <TableHead className="font-semibold">ETL Status</TableHead>
-                <TableHead className="font-semibold">Last Sync Time</TableHead>
-                <TableHead className="font-semibold text-right">Actions</TableHead>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead className="font-semibold w-[220px]">Distributor Name</TableHead>
+                <TableHead className="font-semibold w-[120px]">Code</TableHead>
+                <TableHead className="font-semibold w-[100px]">Status</TableHead>
+                <TableHead className="font-semibold w-[120px]">ETL Status</TableHead>
+                <TableHead className="font-semibold w-[180px]">Last Sync Time</TableHead>
+                <TableHead className="font-semibold text-right w-[260px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {distributors.map((distributor, index) => (
-                <TableRow key={index} className="hover:bg-muted/50">
+              {paginatedDistributors.map((distributor, index) => (
+                <TableRow key={index} className="hover:bg-muted/30 transition-colors">
                   <TableCell className="font-medium">{distributor.name}</TableCell>
-                  <TableCell>{distributor.code}</TableCell>
+                  <TableCell className="font-mono text-sm">{distributor.code}</TableCell>
                   <TableCell>{getStatusBadge(distributor.status)}</TableCell>
                   <TableCell>{getETLStatusBadge(distributor.etlStatus)}</TableCell>
-                  <TableCell className="text-muted-foreground">{distributor.lastSync}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{distributor.lastSync}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <RotateCw className="w-3 h-3" />
+                      <Button variant="outline" size="sm" className="gap-1.5">
+                        <RotateCw className="w-3.5 h-3.5" />
                         Retry
                       </Button>
-                      <Button variant="outline" size="sm" className="gap-1">
+                      <Button variant="outline" size="sm" className="gap-1.5">
                         {distributor.etlStatus === "Paused" ? (
                           <>
-                            <Play className="w-3 h-3" />
+                            <Play className="w-3.5 h-3.5" />
                             Resume
                           </>
                         ) : (
                           <>
-                            <Pause className="w-3 h-3" />
+                            <Pause className="w-3.5 h-3.5" />
                             Pause
                           </>
                         )}
                       </Button>
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <User className="w-3 h-3" />
+                      <Button variant="outline" size="sm" className="gap-1.5">
+                        <User className="w-3.5 h-3.5" />
                         Profile
                       </Button>
                     </div>
@@ -184,6 +198,37 @@ const DistributorList = () => {
             </TableBody>
           </Table>
         </CardContent>
+        
+        {/* Pagination */}
+        <div className="border-t p-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                    className="cursor-pointer"
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </Card>
     </div>
   );

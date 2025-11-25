@@ -18,6 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Eye, RotateCw, Download } from "lucide-react";
@@ -25,6 +33,8 @@ import { format } from "date-fns";
 
 const ETLHistory = () => {
   const [date, setDate] = useState<Date>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const jobs = [
     { 
@@ -83,6 +93,10 @@ const ETLHistory = () => {
     };
     return <Badge className={colors[status] || ""}>{status}</Badge>;
   };
+
+  const totalPages = Math.ceil(jobs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedJobs = jobs.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="space-y-6">
@@ -155,25 +169,25 @@ const ETLHistory = () => {
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="font-semibold">Job ID</TableHead>
-                <TableHead className="font-semibold">Distributor</TableHead>
-                <TableHead className="font-semibold">Timestamp</TableHead>
-                <TableHead className="font-semibold">Duration</TableHead>
-                <TableHead className="font-semibold">Records Processed</TableHead>
-                <TableHead className="font-semibold">Errors</TableHead>
-                <TableHead className="font-semibold">Status</TableHead>
-                <TableHead className="font-semibold text-right">Actions</TableHead>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead className="font-semibold w-[140px]">Job ID</TableHead>
+                <TableHead className="font-semibold w-[200px]">Distributor</TableHead>
+                <TableHead className="font-semibold w-[160px]">Timestamp</TableHead>
+                <TableHead className="font-semibold w-[100px]">Duration</TableHead>
+                <TableHead className="font-semibold w-[140px]">Records Processed</TableHead>
+                <TableHead className="font-semibold w-[80px]">Errors</TableHead>
+                <TableHead className="font-semibold w-[100px]">Status</TableHead>
+                <TableHead className="font-semibold text-right w-[180px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {jobs.map((job, index) => (
-                <TableRow key={index} className="hover:bg-muted/50">
-                  <TableCell className="font-medium">{job.jobId}</TableCell>
-                  <TableCell>{job.distributor}</TableCell>
-                  <TableCell className="text-muted-foreground">{job.timestamp}</TableCell>
-                  <TableCell>{job.duration}</TableCell>
-                  <TableCell>{job.records.toLocaleString()}</TableCell>
+              {paginatedJobs.map((job, index) => (
+                <TableRow key={index} className="hover:bg-muted/30 transition-colors">
+                  <TableCell className="font-mono text-sm text-muted-foreground">{job.jobId}</TableCell>
+                  <TableCell className="font-medium">{job.distributor}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{job.timestamp}</TableCell>
+                  <TableCell className="text-sm">{job.duration}</TableCell>
+                  <TableCell className="font-medium">{job.records.toLocaleString()}</TableCell>
                   <TableCell>
                     {job.errors > 0 ? (
                       <span className="text-destructive font-medium">{job.errors}</span>
@@ -184,13 +198,13 @@ const ETLHistory = () => {
                   <TableCell>{getStatusBadge(job.status)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <Eye className="w-3 h-3" />
+                      <Button variant="outline" size="sm" className="gap-1.5">
+                        <Eye className="w-3.5 h-3.5" />
                         View Log
                       </Button>
                       {job.status === "Failed" && (
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <RotateCw className="w-3 h-3" />
+                        <Button variant="outline" size="sm" className="gap-1.5">
+                          <RotateCw className="w-3.5 h-3.5" />
                           Retry
                         </Button>
                       )}
@@ -201,6 +215,37 @@ const ETLHistory = () => {
             </TableBody>
           </Table>
         </CardContent>
+        
+        {/* Pagination */}
+        <div className="border-t p-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                    className="cursor-pointer"
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </Card>
     </div>
   );
