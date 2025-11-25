@@ -1,32 +1,36 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Store, Package, MapPin, DollarSign, AlertCircle } from "lucide-react";
+import { Wine, Activity, TrendingUp, AlertCircle } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const Dashboard = () => {
   const stats = [
     { 
-      icon: Store, 
+      icon: Wine, 
       label: "Total Distributors", 
       value: "24",
-      color: "primary"
+      color: "primary",
+      change: "+3 this month"
     },
     { 
-      icon: Package, 
+      icon: Activity, 
       label: "Active ETL", 
       value: "18",
-      color: "info"
+      color: "secondary",
+      change: "Running now"
+    },
+    { 
+      icon: TrendingUp, 
+      label: "Success Rate", 
+      value: "98.5%",
+      color: "success",
+      change: "+2.1% this week"
     },
     { 
       icon: AlertCircle, 
-      label: "Paused ETL", 
-      value: "6",
-      color: "secondary"
-    },
-    { 
-      icon: DollarSign, 
-      label: "Recent Failures", 
+      label: "Failed Jobs", 
       value: "3",
-      color: "accent"
+      color: "destructive",
+      change: "Requires attention"
     },
   ];
 
@@ -63,15 +67,20 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <Card key={index} className="hover:shadow-lg transition-shadow">
+          <Card key={index} className={`bg-gradient-to-br from-${stat.color}/10 via-${stat.color}/5 to-transparent border-${stat.color}/20 hover:shadow-lg transition-all`}>
             <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                  <p className="text-3xl font-bold">{stat.value}</p>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                  <div className={`w-10 h-10 rounded-full bg-${stat.color}/10 flex items-center justify-center shrink-0`}>
+                    <stat.icon className={`w-5 h-5 text-${stat.color}`} />
+                  </div>
                 </div>
-                <div className={`p-3 rounded-xl bg-${stat.color} bg-opacity-10`}>
-                  <stat.icon className={`w-6 h-6 text-${stat.color}`} />
+                <div>
+                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                  <p className={`text-xs mt-1 ${stat.color === 'destructive' ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+                    {stat.change}
+                  </p>
                 </div>
               </div>
             </CardContent>
