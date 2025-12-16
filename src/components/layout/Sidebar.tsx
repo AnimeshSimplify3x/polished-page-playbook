@@ -1,9 +1,11 @@
 import { NavLink } from "@/components/NavLink";
 import { 
   LayoutDashboard, 
-  Users, 
-  History, 
-  Wine
+  Package, 
+  Store, 
+  FileText, 
+  CheckCircle,
+  Beer
 } from "lucide-react";
 import {
   Sidebar as SidebarRoot,
@@ -20,10 +22,11 @@ const Sidebar = () => {
   const { open } = useSidebar();
   
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-    { icon: Wine, label: "Distributors", path: "/distributors" },
-    { icon: History, label: "ETL History", path: "/etl-history" },
-    { icon: Users, label: "Team Management", path: "/team" },
+    { icon: LayoutDashboard, label: "Reconciliation Dashboard", path: "/" },
+    { icon: Package, label: "SKU Mapping", path: "/sku-mapping" },
+    { icon: Store, label: "Outlet Mapping", path: "/outlet-mapping" },
+    { icon: FileText, label: "License Mapping", path: "/license-mapping" },
+    { icon: CheckCircle, label: "Outlet Approvals", path: "/outlet-approvals" },
   ];
 
   return (
@@ -33,9 +36,9 @@ const Sidebar = () => {
         <div className="p-6 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shrink-0">
-              <Wine className="w-6 h-6 text-primary-foreground" />
+              <Beer className="w-6 h-6 text-primary-foreground" />
             </div>
-            {open && <h1 className="text-xl font-bold text-sidebar-foreground">OSMOSYS 2.0</h1>}
+            {open && <h1 className="text-xl font-bold text-sidebar-foreground">BREWERY PORTAL</h1>}
           </div>
         </div>
 
